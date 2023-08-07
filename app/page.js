@@ -7,6 +7,16 @@ import { useState, useEffect } from 'react'
 export default function Home() {
 
   const [productForm, setProductForm] = useState({})
+  const [products, setProducts] = useState([])
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const response = await fetch('/api/product')
+      let jsonResponse = await response.json()
+      setProducts(jsonResponse.products)
+    }
+    fetchProducts();
+  }, [])
 
   const addProduct = async (e) => {
 
@@ -81,17 +91,13 @@ export default function Home() {
             </tr>
           </thead>
           <tbody>
-            <tr className='border-b border-gray-200'>
-              <td className='py-4 px-6 text-left text-sm font-medium text-gray-800'>Product A</td>
-              <td className='py-4 px-6 text-left text-sm font-medium text-gray-800'>2</td>
-              <td className='py-4 px-6 text-left text-sm font-medium text-gray-800'>$10.00</td>
-            </tr>
-            <tr className='border-b border-gray-200'>
-              <td className='py-4 px-6 text-left text-sm font-medium text-gray-800'>Product B</td>
-              <td className='py-4 px-6 text-left text-sm font-medium text-gray-800'>3</td>
-              <td className='py-4 px-6 text-left text-sm font-medium text-gray-800'>$20.00</td>
-            </tr>
-            {/* Add more rows for other products */}
+            {products.map(product => {
+              return <tr key={product.slug} className='border-b border-gray-200'>
+                <td className='py-4 px-6 text-left text-sm font-medium text-gray-800'>{product.slug}</td>
+                <td className='py-4 px-6 text-left text-sm font-medium text-gray-800'>{product.quantity}</td>
+                <td className='py-4 px-6 text-left text-sm font-medium text-gray-800'>{product.price}</td>
+              </tr>
+            })}
           </tbody>
         </table>
       </div>
