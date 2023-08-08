@@ -24,7 +24,6 @@ export async function GET(request) {
 export async function POST(request) {
     
     let body = await request.json();
-    console.log(body, "ye body hai")
     // Replace the uri string with your connection string.
     const uri = "mongodb://localhost:27017/";
 
@@ -42,3 +41,42 @@ export async function POST(request) {
         await client.close();
     }
 }
+
+export async function PUT(request) {
+    const uri = "mongodb://localhost:27017/";
+    const client = new MongoClient(uri);
+  
+    try {
+      const body = await request.json();
+      console.log(body, "put request ki body")
+      const { slug, quantity } = body;
+  
+      if (!slug || !quantity) {
+        return new NextResponse(
+          JSON.stringify({ success: false, error: "Invalid request data" }),
+          { status: 400, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+  
+      const client = new MongoClient(uri);
+  
+      const database = client.db('stock');
+      const inventory = database.collection('inventory');
+  
+      const updateResult = await inventory.updateOne({ slug }, { $set: { quantity } });
+  
+      if (updateResult.matchedCount === 1 && updateResult.modifiedCount === 1) {
+        return new NextResponse(
+          JSON.stringify({ success: true, message: "Quantity updated successfully" }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        );
+      } else {
+        return new NextResponse(
+          JSON.stringify({ success: false, error: "Failed to update quantity" }),
+          { status: 500, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+    } finally {
+      await client.close();
+    }
+  }

@@ -11,18 +11,21 @@ export default function Home() {
   const [alert, setAlert] = useState("")
   const [query, setQuery] = useState("")
   const [loading, setLoading] = useState(false)
-  const [dropdown, setDropdown] = useState([
-    {"_id":"64d1d148bc2da4f08837a16a","slug":"mango","quantity":"12","price":"19"}
-  ])
+  const [dropdown, setDropdown] = useState([])
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      const response = await fetch('/api/product')
-      let jsonResponse = await response.json()
-      setProducts(jsonResponse.products)
-    }
     fetchProducts();
   }, [])
+
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch('/api/product');
+      const jsonResponse = await response.json();
+      setProducts(jsonResponse.products);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
 
   const addProduct = async (e) => {
 
@@ -50,6 +53,34 @@ export default function Home() {
       console.error('Error adding product:', error);
     }
   };
+
+
+  const updateQuantity = async (item, newQuantity) => {
+    try {
+      const response = await fetch('/api/product', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ slug: item.slug, quantity: newQuantity }), // Send slug and newQuantity in the body
+      });
+  
+      const responseData = await response.json();
+      console.log('Server response:', responseData);
+  
+      if (response.ok && responseData.success) {
+        // Quantity updated successfully, you can handle the response as needed
+        console.log('Quantity updated successfully');
+        // You might want to refresh the list of products or update the specific product's quantity in state
+        fetchProducts(); // Assuming you have a fetchProducts function that updates the products state
+      } else {
+        console.error('Failed to update quantity');
+      }
+    } catch (error) {
+      console.error('Error updating quantity:', error);
+    }
+  };
+  
 
   const handleChange = (e) => {
     setProductForm({...productForm, [e.target.name]: e.target.value})
@@ -107,12 +138,17 @@ export default function Home() {
             <div className='flex-1'>
               <h3 className='text-lg font-semibold'>{item.slug}</h3>
               <p className='text-gray-500'>Quantity: {item.quantity}</p>
+              <div className='flex space-x-2'>
+                <button onClick={() => updateQuantity(item, parseInt(item.quantity) - 1)} className='bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600 transition duration-300'>-</button>
+                <button onClick={() => updateQuantity(item, parseInt(item.quantity) + 1)} className='bg-green-500 text-white py-1 px-2 rounded hover:bg-green-600 transition duration-300'>+</button>
+              </div>
             </div>
             <div className='text-lg font-semibold text-green-600'>
               ₹{item.price}
             </div>
           </div>
         ))}
+
 
         <h1 className='text-3xl font-semibold mb-6'>Add a Product</h1>
         {/* Code for adding a product */}
