@@ -30,4 +30,5 @@ To get started with the Stock Management System locally, follow these steps:
 3. **Run the development server:**
 
    npm run dev
+   
    open the url "http://localhost:3000" in browser
