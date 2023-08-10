@@ -54,7 +54,6 @@ export default function Home() {
     }
   };
 
-
   const updateQuantity = async (item, newQuantity) => {
     try {
       const response = await fetch('/api/product', {
@@ -71,8 +70,16 @@ export default function Home() {
       if (response.ok && responseData.success) {
         // Quantity updated successfully, you can handle the response as needed
         console.log('Quantity updated successfully');
-        // You might want to refresh the list of products or update the specific product's quantity in state
-        fetchProducts(); // Assuming you have a fetchProducts function that updates the products state
+        // Update the dropdown state with the updated quantity
+        const updatedDropdown = dropdown.map(dropdownItem => {
+          if (dropdownItem.slug === item.slug) {
+            return { ...dropdownItem, quantity: newQuantity };
+          }
+          return dropdownItem;
+        });
+        setDropdown(updatedDropdown);
+        // You might also want to refresh the products state or fetch the updated data
+        fetchProducts();
       } else {
         console.error('Failed to update quantity');
       }
@@ -80,6 +87,7 @@ export default function Home() {
       console.error('Error updating quantity:', error);
     }
   };
+  
   
 
   const handleChange = (e) => {

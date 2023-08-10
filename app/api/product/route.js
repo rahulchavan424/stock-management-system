@@ -3,7 +3,7 @@ const { NextResponse } = require("next/server");
 
 export async function GET(request) {
     // Replace the uri string with your connection string.
-    const uri = "mongodb://localhost:27017/";
+    const uri = "mongodb://0.0.0.0:27017/";
 
     const client = new MongoClient(uri);
 
@@ -25,7 +25,7 @@ export async function POST(request) {
     
     let body = await request.json();
     // Replace the uri string with your connection string.
-    const uri = "mongodb://localhost:27017/";
+    const uri = "mongodb://0.0.0.0:27017/";
 
     const client = new MongoClient(uri);
 
@@ -43,7 +43,7 @@ export async function POST(request) {
 }
 
 export async function PUT(request) {
-    const uri = "mongodb://localhost:27017/";
+    const uri = "mongodb://0.0.0.0:27017/";
     const client = new MongoClient(uri);
   
     try {
